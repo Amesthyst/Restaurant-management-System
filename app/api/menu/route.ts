@@ -16,10 +16,13 @@ export async function GET() {
   } catch (error: any) {
     console.error("GET_MENU_ERROR:", error);
 
-    return NextResponse.json(
-      { error: "Failed to fetch menu" },
-      { status: 500 }
-    );
+return NextResponse.json(
+  {
+    error: error.message,
+    full: error
+  },
+  { status: 500 }
+);  
   }
 }
 
