@@ -101,12 +101,18 @@ export default function MenuAdmin() {
           onChange={(e) => setForm({ ...form, price: e.target.value })}
         />
 
-        <input
-          className="w-full border p-2 rounded"
-          placeholder="Category (food, drink, dessert)"
+        <select
+          className="w-full rounded-xl border border-gray-200 bg-white p-3 outline-none focus:border-black"
           value={form.category}
-          onChange={(e) => setForm({ ...form, category: e.target.value })}
-        />
+          onChange={(e) =>
+            setForm({ ...form, category: e.target.value })
+          }
+        >
+          <option value="">Select Category</option>
+          <option value="food">Food</option>
+          <option value="drink">Drink</option>
+          <option value="dessert">Dessert</option>
+        </select>
 
         <button
           type="submit"

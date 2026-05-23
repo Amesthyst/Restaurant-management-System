@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { LayoutDashboard, ShoppingBag, ClipboardList } from "lucide-react";
 
 export default function AdminLayout({
   children,
@@ -6,28 +7,43 @@ export default function AdminLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="min-h-screen flex bg-gray-100">
-      {/* SIDEBAR */}
-      <aside className="w-64 bg-white border-r p-4">
-        <h2 className="text-xl font-bold mb-6">Admin Panel</h2>
+    <div className="flex min-h-screen bg-[#f5f7fb]">
+      <aside className="hidden w-72 flex-col border-r bg-white p-6 lg:flex">
+        <div>
+          <h1 className="text-3xl font-black">🍽 Admin</h1>
+          <p className="mt-1 text-sm text-gray-500">
+            Restaurant Management
+          </p>
+        </div>
 
-        <nav className="space-y-2">
-          <Link className="block p-2 rounded hover:bg-gray-100" href="/admin">
+        <nav className="mt-10 space-y-3">
+          <Link
+            href="/admin"
+            className="flex items-center gap-3 rounded-2xl px-4 py-3 transition hover:bg-gray-100"
+          >
+            <LayoutDashboard className="h-5 w-5" />
             Dashboard
           </Link>
 
-          <Link className="block p-2 rounded hover:bg-gray-100" href="/admin/menu">
+          <Link
+            href="/admin/menu"
+            className="flex items-center gap-3 rounded-2xl px-4 py-3 transition hover:bg-gray-100"
+          >
+            <ShoppingBag className="h-5 w-5" />
             Menu
           </Link>
 
-          <Link className="block p-2 rounded hover:bg-gray-100" href="/admin/orders">
+          <Link
+            href="/admin/orders"
+            className="flex items-center gap-3 rounded-2xl px-4 py-3 transition hover:bg-gray-100"
+          >
+            <ClipboardList className="h-5 w-5" />
             Orders
           </Link>
         </nav>
       </aside>
 
-      {/* MAIN */}
-      <main className="flex-1 p-6 overflow-auto">{children}</main>
+      <main className="flex-1 p-6 lg:p-10">{children}</main>
     </div>
   );
 }

@@ -1,28 +1,45 @@
-export default function Admin() {
-    return (
-      <div className="flex min-h-screen">
-        {/* MAIN */}
-        <main className="flex-1 p-6">
-          <h1 className="text-2xl font-bold">Dashboard</h1>
-  
-          {/* STATS */}
-          <div className="grid grid-cols-3 gap-4 mt-6">
-            <div className="card">
-              <p>Total Orders</p>
-              <h2 className="text-2xl font-bold">120</h2>
-            </div>
-  
-            <div className="card">
-              <p>Revenue</p>
-              <h2 className="text-2xl font-bold">Rp 2.5M</h2>
-            </div>
-  
-            <div className="card">
-              <p>Menu Items</p>
-              <h2 className="text-2xl font-bold">35</h2>
-            </div>
-          </div>
-        </main>
+export default function AdminDashboard() {
+  const stats = [
+    {
+      title: "Total Orders",
+      value: "120",
+    },
+    {
+      title: "Revenue",
+      value: "Rp 2.5M",
+    },
+    {
+      title: "Menu Items",
+      value: "35",
+    },
+  ];
+
+  return (
+    <div>
+      <div>
+        <h1 className="text-4xl font-black text-gray-900">
+          Dashboard
+        </h1>
+
+        <p className="mt-2 text-gray-500">
+          Monitor restaurant performance and operations.
+        </p>
       </div>
-    );
-  }
+
+      <div className="mt-10 grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+        {stats.map((stat) => (
+          <div
+            key={stat.title}
+            className="rounded-3xl bg-white p-6 shadow-sm"
+          >
+            <p className="text-sm text-gray-500">{stat.title}</p>
+
+            <h2 className="mt-3 text-4xl font-black text-gray-900">
+              {stat.value}
+            </h2>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
