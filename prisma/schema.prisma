@@ -14,13 +14,44 @@ datasource db {
   url      = env("DATABASE_URL")
   directUrl = env("DIRECT_URL")
 }
-model MenuItem {
+
+enum Role {
+  ADMIN
+  CUSTOMER
+}
+
+model User {
   id        String   @id @default(cuid())
   name      String
-  price     Int
-  image     String?
-  category  String
+  email     String   @unique
+  password  String
+  role      Role     @default(CUSTOMER)
   createdAt DateTime @default(now())
+}
+
+model MenuItem {
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+  price       Int
+  image       String?
+  category    String
+
+  templateId  String?
+
+  createdAt   DateTime @default(now())
+
+  template    OptionTemplate? @relation(fields: [templateId], references: [id])
+}
+
+model OptionTemplate {
+  id          String   @id @default(cuid())
+  name        String   
+  label       String   
+
+  options     Json     
+
+  menuItems   MenuItem[]
 }
 
 model Order {
@@ -33,12 +64,17 @@ model Order {
 }
 
 model OrderItem {
-   id        String   @id @default(cuid())
-  orderId   String
-  menuId    String
-  quantity  Int
-  price     Int
-  name      String
+  id          String   @id @default(cuid())
+  orderId     String
+  menuId      String
+  quantity    Int
+  price       Int
+  name        String
 
-  order     Order    @relation(fields: [orderId], references: [id])
+  spicyLevel  String?
+  sugarLevel  String?
+  iceLevel    String?
+  notes       String?
+
+  order       Order @relation(fields: [orderId], references: [id])
 }

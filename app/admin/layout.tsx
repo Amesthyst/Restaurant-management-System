@@ -1,4 +1,7 @@
+"use client";
+
 import Link from "next/link";
+import { signOut } from "next-auth/react";
 import { LayoutDashboard, ShoppingBag, ClipboardList } from "lucide-react";
 
 export default function AdminLayout({
@@ -41,6 +44,15 @@ export default function AdminLayout({
             Orders
           </Link>
         </nav>
+        <button
+          onClick={() =>
+            signOut({
+              callbackUrl: "/login",
+            })
+          }
+          className="mt-6 w-full rounded-xl bg-black px-4 py-3 text-white">
+          Logout
+        </button>
       </aside>
 
       <main className="flex-1 p-6 lg:p-10">{children}</main>

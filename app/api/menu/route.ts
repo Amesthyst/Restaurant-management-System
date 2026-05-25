@@ -3,56 +3,44 @@ import { NextResponse } from "next/server";
 
 export const dynamic = "force-dynamic";
 
-// GET ALL MENU ITEMS
+// GET
 export async function GET() {
   try {
     const menu = await prisma.menuItem.findMany({
-      orderBy: {
-        createdAt: "desc",
+      include: {
+        template: true,
       },
+      orderBy: { createdAt: "desc" },
     });
 
     return NextResponse.json(menu);
   } catch (error: any) {
-    console.error("GET_MENU_ERROR:", error);
-
-return NextResponse.json(
-  {
-    error: error.message,
-    full: error
-  },
-  { status: 500 }
-);  
+    return NextResponse.json(
+      { error: error.message },
+      { status: 500 }
+    );
   }
 }
 
-// CREATE MENU ITEM
+// CREATE
 export async function POST(req: Request) {
   try {
     const body = await req.json();
 
-    // basic validation
-    if (!body.name || !body.price || !body.category) {
-      return NextResponse.json(
-        { error: "Missing fields" },
-        { status: 400 }
-      );
-    }
-
     const newItem = await prisma.menuItem.create({
       data: {
         name: body.name,
+        description: body.description,
         price: Number(body.price),
         category: body.category,
+        templateId: body.templateId || null,
       },
     });
 
     return NextResponse.json(newItem);
   } catch (error: any) {
-    console.error("POST_MENU_ERROR:", error);
-
     return NextResponse.json(
-      { error: "Failed to create menu item" },
+      { error: error.message },
       { status: 500 }
     );
   }

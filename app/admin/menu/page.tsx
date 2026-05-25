@@ -2,144 +2,197 @@
 
 import { useEffect, useState } from "react";
 
-type MenuItem = {
-  id: string;
-  name: string;
-  price: number;
-  category: string;
-};
-
 export default function MenuAdmin() {
-  const [menu, setMenu] = useState<MenuItem[]>([]);
+  const [menu, setMenu] = useState<any[]>([]);
+  const [templates, setTemplates] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
 
   const [form, setForm] = useState({
     name: "",
+    description: "",
     price: "",
     category: "",
+    templateId: "",
   });
 
-  // GET MENU
   const fetchMenu = async () => {
-    try {
-      const res = await fetch("/api/menu");
-      const data = await res.json();
-      setMenu(data);
-    } catch (err) {
-      console.error("FETCH_ERROR:", err);
-    }
+    const res = await fetch("/api/menu");
+    const data = await res.json();
+    setMenu(Array.isArray(data) ? data : []);
+  };
+
+  const fetchTemplates = async () => {
+    const res = await fetch("/api/templates");
+    const data = await res.json();
+    setTemplates(data);
   };
 
   useEffect(() => {
     fetchMenu();
+    fetchTemplates();
   }, []);
 
-  // ADD MENU
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!form.name || !form.price || !form.category) {
-      alert("Please fill all fields");
-      return;
-    }
+    setLoading(true);
 
-    try {
-      setLoading(true);
+    await fetch("/api/menu", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(form),
+    });
 
-      const res = await fetch("/api/menu", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          name: form.name,
-          price: Number(form.price),
-          category: form.category,
-        }),
-      });
+    setForm({
+      name: "",
+      description: "",
+      price: "",
+      category: "",
+      templateId: "",
+    });
 
-      const data = await res.json();
+    fetchMenu();
+    setLoading(false);
+  };
 
-      if (!res.ok) {
-        alert(data.error || "Failed to add menu");
-        return;
-      }
+  const handleDelete = async (id: string) => {
+    await fetch(`/api/menu/${id}`, {
+      method: "DELETE",
+    });
 
-      // reset form
-      setForm({ name: "", price: "", category: "" });
-
-      // refresh list
-      fetchMenu();
-    } catch (err) {
-      console.error("SUBMIT_ERROR:", err);
-    } finally {
-      setLoading(false);
-    }
+    fetchMenu();
   };
 
   return (
-    <div>
-      <h1 className="text-2xl font-bold mb-6">Menu Management</h1>
+    <div className="p-6">
+      <h1 className="text-3xl font-black">
+        Menu Management
+      </h1>
 
       {/* FORM */}
       <form
         onSubmit={handleSubmit}
-        className="bg-white p-4 rounded-xl shadow space-y-3"
+        className="mt-6 space-y-3 rounded-2xl bg-white p-4"
       >
+        {/* NAME */}
         <input
-          className="w-full border p-2 rounded"
-          placeholder="Menu name"
+          className="w-full border p-2"
+          placeholder="Name"
           value={form.name}
-          onChange={(e) => setForm({ ...form, name: e.target.value })}
+          onChange={(e) =>
+            setForm({
+              ...form,
+              name: e.target.value,
+            })
+          }
         />
 
+        {/* DESCRIPTION */}
+        <textarea
+          className="w-full border p-2"
+          placeholder="Description"
+          value={form.description}
+          onChange={(e) =>
+            setForm({
+              ...form,
+              description: e.target.value,
+            })
+          }
+        />
+
+        {/* PRICE */}
         <input
-          className="w-full border p-2 rounded"
-          placeholder="Price"
           type="number"
+          className="w-full border p-2"
+          placeholder="Price"
           value={form.price}
-          onChange={(e) => setForm({ ...form, price: e.target.value })}
+          onChange={(e) =>
+            setForm({
+              ...form,
+              price: e.target.value,
+            })
+          }
         />
 
+        {/* CATEGORY DROPDOWN */}
         <select
-          className="w-full rounded-xl border border-gray-200 bg-white p-3 outline-none focus:border-black"
+          className="w-full border p-2"
           value={form.category}
           onChange={(e) =>
-            setForm({ ...form, category: e.target.value })
+            setForm({
+              ...form,
+              category: e.target.value,
+            })
           }
-        >
-          <option value="">Select Category</option>
+          >
+          <option value="" disabled>
+            Choose category
+          </option>
           <option value="food">Food</option>
           <option value="drink">Drink</option>
           <option value="dessert">Dessert</option>
         </select>
 
-        <button
-          type="submit"
-          disabled={loading}
-          className="bg-black text-white px-4 py-2 rounded w-full disabled:opacity-50"
+        {/* TEMPLATE DROPDOWN */}
+        <select
+          className="w-full border p-2"
+          value={form.templateId}
+          onChange={(e) =>
+            setForm({
+              ...form,
+              templateId: e.target.value,
+            })
+          }
         >
-          {loading ? "Adding..." : "Add Menu"}
+          <option value="">
+            No Template
+          </option>
+
+          {templates.map((t: any) => (
+            <option key={t.id} value={t.id}>
+              {t.label}
+            </option>
+          ))}
+        </select>
+
+        <button className="w-full bg-black p-2 text-white">
+          {loading
+            ? "Loading..."
+            : "Create Menu"}
         </button>
       </form>
 
       {/* LIST */}
-      <div className="mt-6 grid gap-3">
-        {menu.length === 0 && (
-          <p className="text-gray-500">No menu items yet</p>
-        )}
-
+      <div className="mt-6 space-y-3">
         {menu.map((item) => (
           <div
             key={item.id}
-            className="bg-white p-4 rounded-xl shadow flex justify-between items-center"
+            className="rounded-xl bg-white p-4"
           >
-            <div>
-              <p className="font-bold">{item.name}</p>
-              <p className="text-sm text-gray-500">{item.category}</p>
-            </div>
+            <h2 className="text-xl font-bold">
+              {item.name}
+            </h2>
 
-            <div className="font-semibold">Rp {item.price}</div>
+            <p className="text-gray-500">
+              {item.description}
+            </p>
+
+            <p className="font-semibold">
+              Rp {item.price}
+            </p>
+
+            <p className="text-sm text-gray-400">
+              Category: {item.category}
+            </p>
+
+            <button
+              onClick={() =>
+                handleDelete(item.id)
+              }
+              className="mt-2 rounded bg-red-500 px-3 py-1 text-white"
+            >
+              Delete
+            </button>
           </div>
         ))}
       </div>

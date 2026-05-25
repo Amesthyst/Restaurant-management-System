@@ -14,10 +14,10 @@ export async function GET() {
 
     return NextResponse.json(orders);
   } catch (error) {
-    return NextResponse.json(
-      { error: "Failed to fetch orders" },
-      { status: 500 }
-    );
+    console.error("GET ORDERS ERROR:", error);
+
+    // always return valid JSON (IMPORTANT FIX)
+    return NextResponse.json([], { status: 200 });
   }
 }
 
@@ -25,22 +25,41 @@ export async function POST(req: Request) {
   try {
     const body = await req.json();
 
+    console.log("ORDER BODY:", body);
+
+    const tableNo = body.tableNo ?? body.items?.[0]?.tableNo;
+
+    if (!tableNo) {
+      return NextResponse.json(
+        { error: "tableNo is required" },
+        { status: 400 }
+      );
+    }
+
+    if (!Array.isArray(body.items) || body.items.length === 0) {
+      return NextResponse.json(
+        { error: "items is required" },
+        { status: 400 }
+      );
+    }
+
     const order = await prisma.order.create({
       data: {
-        tableNo: Number(body.tableNo),
-        total: body.total,
+        tableNo: Number(tableNo),
+        total: Number(body.total ?? 0),
         status: "pending",
-
         items: {
           create: body.items.map((item: any) => ({
             menuId: item.id,
             quantity: item.quantity,
             price: item.price,
             name: item.name,
+            spicyLevel: item.options?.spicy ?? null,
+            sugarLevel: item.options?.sugar ?? null,
+            iceLevel: item.options?.ice ?? null,
           })),
         },
       },
-
       include: {
         items: true,
       },
@@ -48,7 +67,7 @@ export async function POST(req: Request) {
 
     return NextResponse.json(order);
   } catch (error) {
-    console.error(error);
+    console.error("POST ORDER ERROR:", error);
 
     return NextResponse.json(
       { error: "Failed to create order" },

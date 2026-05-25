@@ -6,9 +6,11 @@ type CartItem = {
   name: string;
   price: number;
   quantity: number;
+  tableNo?: string;
+  options?: any;
 };
 
-type CartStore = {
+type Store = {
   items: CartItem[];
 
   addToCart: (item: Omit<CartItem, "quantity">) => void;
@@ -16,22 +18,21 @@ type CartStore = {
   increaseQty: (id: string) => void;
   decreaseQty: (id: string) => void;
   clearCart: () => void;
-
   totalPrice: () => number;
 };
 
-export const useCart = create<CartStore>()(
+export const useCart = create<Store>()(
   persist(
     (set, get) => ({
       items: [],
 
       addToCart: (item) =>
         set((state) => {
-          const existing = state.items.find(
+          const exists = state.items.find(
             (i) => i.id === item.id
           );
 
-          if (existing) {
+          if (exists) {
             return {
               items: state.items.map((i) =>
                 i.id === item.id
@@ -47,10 +48,7 @@ export const useCart = create<CartStore>()(
           return {
             items: [
               ...state.items,
-              {
-                ...item,
-                quantity: 1,
-              },
+              { ...item, quantity: 1 },
             ],
           };
         }),
@@ -88,19 +86,13 @@ export const useCart = create<CartStore>()(
             .filter((i) => i.quantity > 0),
         })),
 
-      clearCart: () =>
-        set({
-          items: [],
-        }),
+      clearCart: () => set({ items: [] }),
 
-      totalPrice: () => {
-        return get().items.reduce(
-          (total, item) =>
-            total +
-            item.price * item.quantity,
+      totalPrice: () =>
+        get().items.reduce(
+          (t, i) => t + i.price * i.quantity,
           0
-        );
-      },
+        ),
     }),
     {
       name: "restaurant-cart",
