@@ -10,7 +10,6 @@ export default function GuestTimer() {
   useEffect(() => {
     if (!session?.user?.email) return;
 
-    // detect guest account
     if (
       session.user.email.includes(
         "@guest.com"

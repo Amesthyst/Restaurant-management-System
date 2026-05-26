@@ -4,6 +4,9 @@ import { use, useEffect, useState } from "react";
 
 import Navbar from "@/components/Navbar";
 import MenuCard from "@/components/MenuCard";
+import Link from "next/link";
+import { ShoppingCart } from "lucide-react";
+import { useCart } from "@/store/cart-store";
 
 type PageProps = {
   params: Promise<{
@@ -19,6 +22,13 @@ export default function TablePage({
   const [menu, setMenu] = useState<any[]>([]);
   const [category, setCategory] =
     useState("all");
+
+    const items = useCart((state) => state.items);
+
+    const totalQty = items.reduce(
+      (total, item) => total + item.quantity,
+      0
+    );
 
   const [loading, setLoading] =
     useState(true);
@@ -54,10 +64,8 @@ export default function TablePage({
 
   return (
     <div className="min-h-screen bg-[#f6f6f6]">
-      {/* NAVBAR */}
       <Navbar tableNo={tableNo} />
 
-      {/* HERO */}
       <section className="bg-gradient-to-br from-black via-zinc-900 to-orange-900 px-6 py-16 text-white">
         <div className="mx-auto max-w-7xl">
           <p className="text-orange-400">
@@ -76,11 +84,8 @@ export default function TablePage({
         </div>
       </section>
 
-      {/* CONTENT */}
       <section className="mx-auto max-w-7xl px-6 py-10">
-        {/* TOP BAR */}
         <div className="flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
-          {/* CATEGORY */}
           <div className="flex flex-wrap gap-3">
             {[
               "all",
@@ -103,17 +108,26 @@ export default function TablePage({
               </button>
             ))}
           </div>
-
-          {/* ONLY ONE CART BUTTON */}
-          {/* <a
+          <Link
             href={`/table/${tableNo}/cart`}
-            className="rounded-2xl bg-black px-6 py-3 text-center font-bold text-white transition hover:bg-gray-800"
+            className="group relative flex h-14 items-center overflow-hidden rounded-2xl bg-black pl-5 pr-5 text-white shadow-lg transition hover:scale-105 hover:bg-orange-500"
           >
-            Open Cart
-          </a> */}
+            <div className="relative">
+              <ShoppingCart size={24} />
+              {totalQty > 0 && (
+                <div className="absolute -right-2 -top-2 flex h-5 min-w-[20px] items-center justify-center rounded-full bg-red-500 px-1 text-[11px] font-bold text-white">
+                  {totalQty}
+                </div>
+              )}
+            </div>
+            <div className="ml-0 max-w-0 overflow-hidden whitespace-nowrap opacity-0 transition-all duration-300 group-hover:ml-3 group-hover:max-w-[200px] group-hover:opacity-100">
+              <span className="font-semibold">
+                Open Cart
+              </span>
+            </div>
+          </Link>
         </div>
 
-        {/* LOADING */}
         {loading ? (
           <div className="mt-10 grid gap-6 md:grid-cols-2 xl:grid-cols-3">
             {[1, 2, 3].map((i) => (
@@ -124,7 +138,6 @@ export default function TablePage({
             ))}
           </div>
         ) : filtered.length === 0 ? (
-          /* EMPTY */
           <div className="mt-10 rounded-3xl bg-white p-10 text-center shadow-sm">
             <h2 className="text-3xl font-black">
               No Menu Found
@@ -135,7 +148,6 @@ export default function TablePage({
             </p>
           </div>
         ) : (
-          /* MENU GRID */
           <div className="mt-10 grid gap-6 md:grid-cols-2 xl:grid-cols-3">
             {filtered.map((item) => (
               <MenuCard

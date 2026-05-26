@@ -6,10 +6,6 @@ import {
   useSession,
 } from "next-auth/react";
 
-import { ShoppingBag } from "lucide-react";
-
-import { useCart } from "@/store/cart-store";
-
 type NavbarProps = {
   tableNo?: string;
 };
@@ -20,21 +16,10 @@ export default function Navbar({
   const { data: session } =
     useSession();
 
-  const items = useCart(
-    (state) => state.items
-  );
-
-  const totalItems = items.reduce(
-    (total, item) =>
-      total + item.quantity,
-    0
-  );
-
   return (
     <header className="sticky top-0 z-50 border-b border-white/10 bg-white/90 backdrop-blur-xl">
       <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
-        
-        {/* LEFT */}
+
         <div className="flex items-center gap-4">
           <Link
             href="/"
@@ -50,26 +35,7 @@ export default function Navbar({
           )}
         </div>
 
-        {/* RIGHT */}
         <div className="flex items-center gap-3">
-
-          {/* CART ICON */}
-          {tableNo && (
-            <Link
-              href={`/table/${tableNo}/cart`}
-              className="relative flex h-11 w-11 items-center justify-center rounded-2xl bg-orange-500 text-white shadow-md transition hover:scale-105 hover:bg-orange-600"
-            >
-              <ShoppingBag size={20} />
-
-              {/* LIVE BADGE */}
-              {totalItems > 0 && (
-                <div className="absolute -right-1 -top-1 flex h-5 min-w-[20px] items-center justify-center rounded-full bg-red-500 px-1 text-[11px] font-bold text-white shadow">
-                  {totalItems}
-                </div>
-              )}
-            </Link>
-          )}
-
           {session ? (
             <>
               <div className="hidden text-right md:block">

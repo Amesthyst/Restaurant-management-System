@@ -1,9 +1,14 @@
 import { prisma } from "@/lib/prisma";
 import { NextResponse } from "next/server";
 
+export const dynamic = "force-dynamic";
+
 export async function GET() {
   try {
     const orders = await prisma.order.findMany({
+      where: {
+        isDeleted: false,
+      },
       include: {
         items: true,
       },
@@ -16,8 +21,10 @@ export async function GET() {
   } catch (error) {
     console.error("GET ORDERS ERROR:", error);
 
-    // always return valid JSON (IMPORTANT FIX)
-    return NextResponse.json([], { status: 200 });
+    return NextResponse.json(
+      { error: "Failed to fetch orders" },
+      { status: 500 }
+    );
   }
 }
 
@@ -48,6 +55,9 @@ export async function POST(req: Request) {
         tableNo: Number(tableNo),
         total: Number(body.total ?? 0),
         status: "pending",
+
+        isDeleted: false,
+
         items: {
           create: body.items.map((item: any) => ({
             menuId: item.id,
@@ -64,6 +74,10 @@ export async function POST(req: Request) {
         items: true,
       },
     });
+    const io = (global as any).io;
+    if (io) {
+      io.emit("new-order", order);
+    }
 
     return NextResponse.json(order);
   } catch (error) {

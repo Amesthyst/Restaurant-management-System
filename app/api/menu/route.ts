@@ -30,15 +30,20 @@ export async function POST(req: Request) {
     const newItem = await prisma.menuItem.create({
       data: {
         name: body.name,
-        description: body.description,
+        description: body.description ?? "",
         price: Number(body.price),
+        costPrice: body.costPrice ? Number(body.costPrice) : null,
         category: body.category,
         templateId: body.templateId || null,
+
+        image: body.image && body.image !== "" ? body.image : null,
       },
     });
 
     return NextResponse.json(newItem);
   } catch (error: any) {
+    console.error(error);
+
     return NextResponse.json(
       { error: error.message },
       { status: 500 }

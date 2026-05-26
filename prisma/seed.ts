@@ -20,6 +20,7 @@ async function main() {
         options: {
           sugar: ["less", "normal", "extra"],
           ice: ["less", "normal"],
+          size: ["small", "medium", "large"],
         },
       },
       {

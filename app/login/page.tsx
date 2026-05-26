@@ -63,7 +63,6 @@ export default function LoginPage() {
     }
   };
 
-  // GUEST LOGIN
   const handleGuestLogin = async () => {
     try {
       setGuestLoading(true);
@@ -153,7 +152,6 @@ export default function LoginPage() {
           </button>
         </form>
 
-        {/* DIVIDER */}
         <div className="my-6 flex items-center gap-3">
           <div className="h-px flex-1 bg-gray-200" />
 
@@ -164,7 +162,6 @@ export default function LoginPage() {
           <div className="h-px flex-1 bg-gray-200" />
         </div>
 
-        {/* GUEST LOGIN */}
         <button
           onClick={handleGuestLogin}
           disabled={guestLoading}
@@ -175,7 +172,6 @@ export default function LoginPage() {
             : "Continue as Guest"}
         </button>
 
-        {/* REGISTER */}
         <p className="mt-8 text-center text-gray-500">
           Don&apos;t have account?{" "}
 

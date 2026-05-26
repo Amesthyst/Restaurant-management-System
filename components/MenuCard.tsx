@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-
 import {
   ShoppingCart,
   ChevronLeft,
@@ -16,6 +15,7 @@ type MenuItem = {
   price: number;
   category: string;
   description?: string;
+  image?: string;
 
   template?: {
     options: {
@@ -29,45 +29,25 @@ type MenuItem = {
 
 type MenuCardProps = {
   item: MenuItem;
+  allowOrder?: boolean; // 👈 NEW
 };
 
 export default function MenuCard({
   item,
+  allowOrder = true,
 }: MenuCardProps) {
-  const {
-    addToCart,
-    increaseQty,
-    decreaseQty,
-    items,
-  } = useCart();
+  const { addToCart, increaseQty, decreaseQty, items } =
+    useCart();
 
   const options = item.template?.options;
 
-  const [selected, setSelected] =
-    useState<Record<string, string>>({});
+  const [selected, setSelected] = useState<Record<string, string>>({});
+  const [added, setAdded] = useState(false);
 
-  const [added, setAdded] =
-    useState(false);
+  const currentItem = items.find((i) => i.id === item.id);
+  const currentQty = currentItem?.quantity || 0;
 
-  // TOTAL CART
-  const totalCartItems = items.reduce(
-    (total, item) =>
-      total + item.quantity,
-    0
-  );
-
-  // CURRENT ITEM INSIDE CART
-  const currentItem = items.find(
-    (i) => i.id === item.id
-  );
-
-  const currentQty =
-    currentItem?.quantity || 0;
-
-  const handleSelect = (
-    key: string,
-    value: string
-  ) => {
+  const handleSelect = (key: string, value: string) => {
     setSelected((prev) => ({
       ...prev,
       [key]: value,
@@ -75,6 +55,8 @@ export default function MenuCard({
   };
 
   const handleAdd = () => {
+    if (!allowOrder) return;
+
     addToCart({
       id: item.id,
       name: item.name,
@@ -82,226 +64,142 @@ export default function MenuCard({
       options: selected,
     });
 
-    // RESET OPTIONS
     setSelected({});
-
-    // ANIMATION
     setAdded(true);
 
-    setTimeout(() => {
-      setAdded(false);
-    }, 1000);
+    setTimeout(() => setAdded(false), 1000);
   };
 
   return (
-    <div className="group overflow-hidden rounded-3xl bg-white shadow-sm transition hover:-translate-y-1 hover:shadow-xl">
-      {/* IMAGE */}
-      <div className="relative h-56 bg-gradient-to-br from-gray-200 to-gray-300">
-        {/* INTERACTIVE HOVER CART */}
-        <div className="absolute right-4 top-4">
-          {currentQty > 0 && (
-            <div className="group/cart flex items-center overflow-hidden rounded-full bg-black text-white shadow-lg transition-all duration-300 hover:pr-2">
-              
-              {/* CART ICON */}
-              <div className="flex items-center gap-2 px-3 py-2">
-                <ShoppingCart size={16} />
+    <div className="group overflow-hidden rounded-3xl bg-white shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-2xl">
 
-                <span className="text-sm font-bold">
-                  {currentQty}
-                </span>
-              </div>
+      <div className="relative h-56 overflow-hidden bg-zinc-200">
+        {item.image ? (
+          <img
+            src={item.image}
+            className="h-full w-full object-cover"
+          />
+        ) : (
+          <div className="flex h-full items-center justify-center text-gray-400">
+            No Image Available
+          </div>
+        )}
 
-              {/* HOVER CONTROLS */}
-              <div className="flex max-w-0 items-center gap-1 overflow-hidden transition-all duration-300 group-hover/cart:max-w-[120px]">
-                
-                {/* DECREASE */}
-                <button
-                  onClick={() =>
-                    decreaseQty(item.id)
-                  }
-                  className="flex h-7 w-7 items-center justify-center rounded-full bg-white/10 transition hover:bg-white/20"
-                >
-                  <ChevronLeft size={16} />
-                </button>
+        {allowOrder && currentQty > 0 && (
+          <div className="absolute right-4 top-4">
+            <div className="flex items-center gap-2 rounded-full bg-black px-3 py-2 text-white">
+              <ShoppingCart size={16} />
+              <span>{currentQty}</span>
 
-                {/* INCREASE */}
-                <button
-                  onClick={() =>
-                    increaseQty(item.id)
-                  }
-                  className="flex h-7 w-7 items-center justify-center rounded-full bg-white/10 transition hover:bg-white/20"
-                >
-                  <ChevronRight size={16} />
-                </button>
-              </div>
+              <button onClick={() => decreaseQty(item.id)}>
+                <ChevronLeft size={14} />
+              </button>
+
+              <button onClick={() => increaseQty(item.id)}>
+                <ChevronRight size={14} />
+              </button>
             </div>
-          )}
-        </div>
+          </div>
+        )}
       </div>
 
-      {/* CONTENT */}
       <div className="p-5">
-        {/* CATEGORY */}
-        <p className="text-sm font-semibold capitalize text-orange-500">
+        <p className="text-sm font-semibold text-orange-500">
           {item.category}
         </p>
 
-        {/* NAME */}
-        <h2 className="mt-1 text-2xl font-black">
-          {item.name}
-        </h2>
+        <h2 className="mt-1 text-2xl font-black">{item.name}</h2>
 
-        {/* DESCRIPTION */}
         {item.description && (
-          <p className="mt-2 text-sm leading-relaxed text-gray-500">
+          <p className="mt-2 text-sm text-gray-500">
             {item.description}
           </p>
         )}
 
-        {/* OPTIONS */}
-        <div className="mt-4 space-y-3">
-          {/* SPICY */}
-          {options?.spicy && (
-            <select
-              value={
-                selected.spicy || ""
-              }
-              className="w-full rounded-xl border border-gray-200 bg-white p-3 outline-none transition focus:border-black"
-              onChange={(e) =>
-                handleSelect(
-                  "spicy",
-                  e.target.value
-                )
-              }
-            >
-              <option value="">
-                Choose Spicy Level
-              </option>
+        {allowOrder && (
+          <div className="mt-4 space-y-3">
+            {options?.spicy && (
+              <select
+                onChange={(e) => handleSelect("spicy", e.target.value)}
+                className="w-full rounded-xl border p-2"
+              >
+                <option value="">Spicy Level</option>
+                {options.spicy.map((v) => (
+                  <option key={v} value={v}>
+                    {v}
+                  </option>
+                ))}
+              </select>
+            )}
 
-              {options.spicy.map((v) => (
-                <option
-                  key={v}
-                  value={v}
-                >
-                  {v}
-                </option>
-              ))}
-            </select>
-          )}
+            {options?.sugar && (
+              <select
+                onChange={(e) => handleSelect("sugar", e.target.value)}
+                className="w-full rounded-xl border p-2"
+              >
+                <option value="">Sugar Level</option>
+                {options.sugar.map((v) => (
+                  <option key={v} value={v}>
+                    {v}
+                  </option>
+                ))}
+              </select>
+            )}
 
-          {/* SUGAR */}
-          {options?.sugar && (
-            <select
-              value={
-                selected.sugar || ""
-              }
-              className="w-full rounded-xl border border-gray-200 bg-white p-3 outline-none transition focus:border-black"
-              onChange={(e) =>
-                handleSelect(
-                  "sugar",
-                  e.target.value
-                )
-              }
-            >
-              <option value="">
-                Choose Sugar Level
-              </option>
+            {options?.ice && (
+              <select
+                onChange={(e) => handleSelect("ice", e.target.value)}
+                className="w-full rounded-xl border p-2"
+              >
+                <option value="">Ice Level</option>
+                {options.ice.map((v) => (
+                  <option key={v} value={v}>
+                    {v}
+                  </option>
+                ))}
+              </select>
+            )}
 
-              {options.sugar.map((v) => (
-                <option
-                  key={v}
-                  value={v}
-                >
-                  {v}
-                </option>
-              ))}
-            </select>
-          )}
-
-          {/* ICE */}
-          {options?.ice && (
-            <select
-              value={
-                selected.ice || ""
-              }
-              className="w-full rounded-xl border border-gray-200 bg-white p-3 outline-none transition focus:border-black"
-              onChange={(e) =>
-                handleSelect(
-                  "ice",
-                  e.target.value
-                )
-              }
-            >
-              <option value="">
-                Choose Ice Level
-              </option>
-
-              {options.ice.map((v) => (
-                <option
-                  key={v}
-                  value={v}
-                >
-                  {v}
-                </option>
-              ))}
-            </select>
-          )}
-
-          {/* SIZE */}
-          {options?.size && (
-            <select
-              value={
-                selected.size || ""
-              }
-              className="w-full rounded-xl border border-gray-200 bg-white p-3 outline-none transition focus:border-black"
-              onChange={(e) =>
-                handleSelect(
-                  "size",
-                  e.target.value
-                )
-              }
-            >
-              <option value="">
-                Choose Size
-              </option>
-
-              {options.size.map((v) => (
-                <option
-                  key={v}
-                  value={v}
-                >
-                  {v}
-                </option>
-              ))}
-            </select>
-          )}
-        </div>
-
-        {/* FOOTER */}
-        <div className="mt-6 flex items-center justify-between">
-          <div>
-            <p className="text-sm text-gray-500">
-              Starting From
-            </p>
-
-            <p className="text-2xl font-black">
-              Rp{" "}
-              {item.price.toLocaleString()}
-            </p>
+            {options?.size && (
+              <select
+                onChange={(e) => handleSelect("size", e.target.value)}
+                className="w-full rounded-xl border p-2"
+              >
+                <option value="">Size</option>
+                {options.size.map((v) => (
+                  <option key={v} value={v}>
+                    {v}
+                  </option>
+                ))}
+              </select>
+            )}
           </div>
+        )}
 
-          <button
-            onClick={handleAdd}
-            className={`rounded-2xl px-5 py-3 font-semibold text-white transition ${
-              added
-                ? "bg-green-500"
-                : "bg-black hover:bg-gray-800"
-            }`}
-          >
-            {added
-              ? "Added ✓"
-              : "Add Order"}
-          </button>
+        <div className="mt-6 flex items-center justify-between">
+          <p className="text-xl font-bold">
+            Rp {item.price.toLocaleString()}
+          </p>
+
+          {allowOrder ? (
+            <button
+              onClick={handleAdd}
+              className={`rounded-2xl px-5 py-3 font-semibold text-white ${
+                added
+                  ? "bg-green-500"
+                  : "bg-black hover:bg-orange-500"
+              }`}
+            >
+              {added ? "Added ✓" : "Add Order"}
+            </button>
+          ) : (
+            <button
+              disabled
+              className="rounded-2xl bg-gray-300 px-5 py-3 font-semibold text-gray-600"
+            >
+              View Only
+            </button>
+          )}
         </div>
       </div>
     </div>
