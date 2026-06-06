@@ -99,14 +99,14 @@ Each item includes:
 - npm run dev
 
 # ⚡ Real-Time Architecture
-Order Created
-     ↓
-Database (Prisma + Supabase)
-     ↓
+ Order Created
+      ->
+ Database (Prisma + Supabase)
+    ->
 Socket.io Event Triggered
-     ↓
+     ->
 Admin Dashboard Updates Instantly
-     ↓
+     ->
 Zustand State Sync UI
 
 # 🔐 Security
@@ -116,18 +116,18 @@ Zustand State Sync UI
 - Auth separation (Supabase + NextAuth)
 
 # 📊 CI/CD
--⚡ Vercel auto deployment
--🔗 GitHub integration
--🚀 Auto build on every push
--🧪 Prisma included in build pipeline
+- ⚡ Vercel auto deployment
+- 🔗 GitHub integration
+- 🚀 Auto build on every push
+- 🧪 Prisma included in build pipeline
 
 # 🚧 Future Improvements
--💳 Payment gateway integration (Midtrans / Stripe)
--📱 Mobile cashier version
--📡 Kitchen Display System (KDS)
--📈 Advanced analytics dashboard
--🧾 Receipt & invoice printing system
--🔔 Push notification system
+- 💳 Payment gateway integration (Midtrans / Stripe)
+- 📱 Mobile cashier version
+- 📡 Kitchen Display System (KDS)
+- 📈 Advanced analytics dashboard
+- 🧾 Receipt & invoice printing system
+- 🔔 Push notification system
 
 # 👨‍💻 Author
 Built by Ricky Pratama Liang
