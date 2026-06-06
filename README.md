@@ -1,36 +1,135 @@
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
-## Getting Started
+## 🍽️ Restaurant Management System (POS + SaaS Level)
 
-First, run the development server:
+A full-stack restaurant POS & management system built with Next.js, Prisma, and Supabase, featuring role-based access control, menu customization system, real-time order tracking, and admin dashboard analytics.
+## 🚀 Live Demo
+https://restaurant-management-system-kon4dewwd-amesthysts-projects.vercel.app/
 
-```bash
+## 🔑 Demo Access
+username: admin@gmail.com
+password : admin123
+# This account is intended for demonstration purposes only and may be reset or modified at any time.
+
+## 🧠 Key Highlights
+👥 Role-Based Access Control (ADMIN / CUSTOMER)
+🍔 Advanced menu system with option templates
+🧾 POS-style order system (order + order items separation)
+🔥 Item-level customization (ice, sugar, spicy, notes)
+📊 Admin dashboard with analytics (Recharts)
+⚡ Real-time updates (Socket.io)
+🗄️ Prisma + PostgreSQL (Supabase)
+
+## ⚙️ Tech Stack
+⚛️ Next.js 16
+🟦 TypeScript
+🗄️ Prisma ORM
+🐘 PostgreSQL (Supabase)
+🔐 Supabase Auth
+⚡ Socket.io (real-time communication)
+🧠 Zustand (state management)
+🎨 Tailwind CSS
+🎯 Lucide React (icons)
+📊 Recharts (analytics)
+🔔 React Hot Toast (notifications)
+📁 XLSX + File Saver (export data)
+🎬 Framer Motion (UI animation)
+
+## 👥 Role System
+ADMIN     → Manage menu, orders, dashboard  
+CUSTOMER  → Create orders
+
+## 🍔 Menu System
+Each menu item supports:
+
+🍽️ Name, price, category
+🖼️ Image support
+💰 Cost price (profit tracking)
+🧩 Option template system (customization engine)
+# 🧩 OptionTemplate System
+Used for defining customizable options such as:
+
+🧊 Ice level
+🍬 Sugar level
+🌶️ Spicy level
+🧾 Additional modifiers
+
+👉 This makes the menu dynamic instead of static
+
+## 🧾 Order System
+This system uses real POS structure:
+
+📦 Order (Header)
+table number
+total price
+status (pending → cooking → done)
+soft delete support
+🍽️ OrderItem (Detail)
+
+Each item includes:
+
+quantity
+menu snapshot (name, price)
+🧊 ice level
+🍬 sugar level
+🌶️ spicy level
+📝 notes
+item status (per-item tracking)
+
+👉 Allows kitchen to process items individually like real restaurant POS
+
+## ⚙️ Installation & Setup
+# 1. Clone repository
+git clone https://github.com/yourusername/restaurant-system.git
+cd restaurant-system
+# 2. Install dependencies
+npm install
+# 3. Setup environment variables
+Create .env file:
+DATABASE_URL="your_postgresql_database_url"
+DIRECT_URL="your_direct_database_url"
+
+NEXT_PUBLIC_SUPABASE_URL="your_supabase_url"
+NEXT_PUBLIC_SUPABASE_ANON_KEY="your_supabase_anon_key"
+
+NEXTAUTH_SECRET="your_secret_key"
+NEXTAUTH_URL="http://localhost:3000"
+# 4. Setup database
+npx prisma generate
+npx prisma migrate dev
+# 5. Run development server
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## ⚡ Real-Time Architecture
+Order Created
+     ↓
+Database (Prisma + Supabase)
+     ↓
+Socket.io Event Triggered
+     ↓
+Admin Dashboard Updates Instantly
+     ↓
+Zustand State Sync UI
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## 🔐 Security
+Role-based access control (ADMIN / CUSTOMER)
+Supabase environment variables secured
+No sensitive keys exposed to frontend
+Auth separation (Supabase + NextAuth)
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## 📊 CI/CD
+⚡ Vercel auto deployment
+🔗 GitHub integration
+🚀 Auto build on every push
+🧪 Prisma included in build pipeline
 
-## Learn More
+## 🚧 Future Improvements
+💳 Payment gateway integration (Midtrans / Stripe)
+📱 Mobile cashier version
+📡 Kitchen Display System (KDS)
+📈 Advanced analytics dashboard
+🧾 Receipt & invoice printing system
+🔔 Push notification system
 
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## 👨‍💻 Author
+Built by Ricky Pratama Liang
